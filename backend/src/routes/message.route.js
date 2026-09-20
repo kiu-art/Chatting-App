@@ -6,7 +6,7 @@ import {upload} from "../middleware/upload.middleware.js";
 const router = express.Router()
 
 router.get("/users",protectRoute,getUsersForSidebar);
-router.get("/users",protectRoute,getConversationsForSidebar);
+router.get("/conversations",protectRoute,getConversationsForSidebar);
 router.get("/:id",protectRoute,getMessages);
 router.post("/send/:id",protectRoute,upload.single("media"),sendMessage); 
 
