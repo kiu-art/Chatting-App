@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 import { hasIMageKitConfig, uploadChatMedia } from "../lib/imagekit.js";
-import { getReceiverSocketId } from "../lib/socket.js";
+import { getReceiverSocketId,io } from "../lib/socket.js";
 
 export async function getUsersForSidebar(req,res){
     try {
@@ -71,7 +71,7 @@ export async function sendMessage(req,res){
                 return res.status(500).json({message:"Media upload is not configured"});
             }
             const url = await uploadChatMedia(req.file);
-            if(req.file.mimetype.startWith("video/"))videoUrl = url;
+            if(req.file.mimetype.startsWith("video/"))videoUrl = url;
             else imageUrl = url;
         }
         const newMessage = new Message({
@@ -83,10 +83,10 @@ export async function sendMessage(req,res){
         })
         await newMessage.save();
 
-        const receiverSockedId = getReceiverSocketId(receiverId);
+        const receiverSocketId = getReceiverSocketId(receiverId);
 
-        if(receiverSockedId){
-            io.to(receiverSockedId).emit("newMessage",newMessage);
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage",newMessage);
         }
 
         res.status(201).json(newMessage);
